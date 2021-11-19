@@ -1,0 +1,172 @@
+{% extends "_post_layout.html" %}
+{% set active_page = "post" %}
+
+{% block title %}
+<title>Bluedit - Post</title>
+{% endblock %}
+
+{% block head_script %}{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-5">
+
+            <p> </p>
+            <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert"
+                 style="display: {{status[0]}}">
+                <b>{{status[1]}}</b>
+            </div>
+
+            <div id="{{ post.postID }}">
+                <div class="card card-main-design" tabindex="-1">
+                    <div class="card-header">
+                        <p class="text-muted" style="font-size: 12px;">
+                            Posted by <a href="{{ url_for('profile_bp.profile', name=post.UUID) }}">{{ post.UUID }}</a>
+                            on {{ post.postTime }}
+                        </p>
+                    </div>
+                    <div class="card-body">
+
+                        <h4 class="card-title">{{ post.postTitle }}</h4>
+
+                        <p class="card-text">{{ post.postContent }}</p>
+
+                        {% if post.postImage != "No Image" %}
+                        <img src="{{ post.postImage }}" class="img-fluid" alt="Responsive image"
+                             style="max-width:200px; max-height:200px;">
+                        <br/>
+                        <br/>
+                        {% endif %}
+
+                        <hr/>
+
+                        <p class="text-muted" style="font-size: 12px;">
+                            Categories: {{ post.postCat }}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-3" style="margin: 0;">
+                                {% if post.UUID == current_user.name %}
+                                <span class="badge badge-pill badge-secondary">Likes: {{ post.postLikes }}</span>
+                                {% else %}
+                                {% if post.postID in likes %}
+                                <span class="badge badge-pill badge-success card_body_interaction"
+                                      onclick="like(this, '{{ post.postID }}', '{{ csrf_token() }}');">Likes: {{ post.postLikes }}</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary card_body_interaction"
+                                      onclick="like(this, '{{ post.postID }}', '{{ csrf_token() }}');">Likes: {{ post.postLikes }}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-3" style="margin: 0;">
+                                <span class="badge badge-pill badge-secondary">Replies: {{ post.postReplies }}</span>
+                            </div>
+                            <div class="col-3" style="margin: 0;">
+                                {% if post.UUID == current_user.name %}
+                                <span class="badge badge-pill badge-secondary">Saves: {{ post.postSaves }}</span>
+                                {% else %}
+                                {% if post.postID in saves %}
+                                <span class="badge badge-pill badge-success card_body_interaction" onclick="save(this, '{{ post.postID }}', '{{ csrf_token() }}');">Saves: {{ post.postSaves }}</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary card_body_interaction" onclick="save(this, '{{ post.postID }}', '{{ csrf_token() }}');">Saves: {{ post.postSaves }}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            {% if post.UUID != current_user.name %}
+                            <div class="col-3 text-right">
+                                <form id="report_post_{{ post.postID }}" method="POST" action="{{ url_for('post_bp.post_report', postid=post.postID) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <span class="badge badge-pill badge-danger card_body_interaction" onclick="report_post_handler('{{ post.postID }}');">Report</span>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if locked != 1 %}
+                    <form id="comment_form" method="POST"
+                          action="{{ url_for('post_bp.post_data', postid=post.postID) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group" style="margin-left: 1%; margin-right:1%; margin-top:0.5%;">
+                            <h6>Leave a comment:</h6>
+                            <textarea class="form-control" id="content" name="content" rows="3"
+                                      placeholder="Enter post content" required></textarea>
+                        </div>
+                        <div class="form-group" style="margin-left: 1%;">
+                            <button type="button" id="post_form_btn" class="btn btn-primary"
+                                    onclick="comment_form_handler()">Comment
+                            </button>
+                        </div>
+                    </form>
+                    {% endif %}
+
+                </div>
+            </div>
+
+
+        </section>
+    </section>
+</section>
+
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-5">
+            {% if replies != None %}
+            {% for reply in replies %}
+            <div id="{{ reply.replyID }}">
+                <div class="card card-main-design" tabindex="-1">
+                    <div class="card-body">
+                        <p class="text-muted" style="font-size: 10px;"><a href="{{ url_for('profile_bp.profile', name=reply.UUID) }}">{{ reply.UUID }}</a>: {{ reply.replyTime }}</p>
+                        <p>{{ reply.replyContent }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-3" style="margin: 0;">
+                                {% if reply.UUID == current_user.name %}
+                                <span class="badge badge-pill badge-secondary">Likes: {{ reply.replyLikes }}</span>
+                                {% else %}
+                                {% if reply.replyID in r_likes %}
+                                <span class="badge badge-pill badge-success card_body_interaction" onclick="reply_like(this, '{{ reply.replyID }}', '{{ csrf_token() }}');">Likes: {{ reply.replyLikes }}</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary card_body_interaction" onclick="reply_like(this, '{{ reply.replyID }}', '{{ csrf_token() }}');">Likes: {{ reply.replyLikes }}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            {% if reply.UUID != current_user.name %}
+                            <div class="col-9 text-right">
+                                <form id="report_reply_{{ reply.replyID }}" method="POST" action="{{ url_for('post_bp.reply_report', replyid=reply.replyID) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <span class="badge badge-pill badge-danger card_body_interaction" onclick="report_reply_handler('{{ reply.replyID }}');">Report</span>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div>
+                <div class="card card-main-design" tabindex="-1">
+                    <div class="card-body">
+                        <p>This post have no comments</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </section>
+    </section>
+</section>
+
+<button onclick="topFunction()" id="fabutton" title="Go to top">Top</button>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/fab_button.js')}}"></script>
+<script src="{{url_for('static', filename='js/validator.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_main.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_button_handler.js')}}"></script>
+{% endblock %}

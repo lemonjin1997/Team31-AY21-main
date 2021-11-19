@@ -1,0 +1,60 @@
+{% extends "_post_layout.html" %}
+{% set active_page = "post" %}
+
+{% block title %}
+<title>Bluedit - Post</title>
+{% endblock %}
+
+{% block head_script %}{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-5">
+
+            <form class="form-container" id="edit_post_form" method="POST" action="{{ url_for('post_bp.post_edit', postid=post.postID) }}">
+
+                <a href="{{ url_for('home_bp.home') }}">&#8592; Back to home</a>
+
+                <br>
+                <hr>
+
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert" style="display: {{ status[0] }}">
+                    <b>{{ status[1] }}</b>
+                </div>
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="title">Post Title:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="title" name="title"
+                               placeholder="Enter post title" value="{{ post.postTitle }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Post Content:</label>
+                    <textarea class="form-control" id="content" name="content" rows="3" placeholder="Enter post content" required>{{ post.postContent }}</textarea>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <button type="button" id="post_form_btn" class="btn btn-primary btn-block" onclick="edit_post_handler()">Post</button>
+                </div>
+
+            </form>
+
+        </section>
+    </section>
+</section>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/validator.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_form.js')}}"></script>
+{% endblock %}

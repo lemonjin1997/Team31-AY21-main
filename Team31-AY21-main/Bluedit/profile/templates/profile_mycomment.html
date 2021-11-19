@@ -1,0 +1,83 @@
+{% extends "_profile_layout.html" %}
+{% set active_page = "profile" %}
+
+{% block title %}
+<title>Bluedit - Profile</title>
+{% endblock %}
+
+
+{% block head_script %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_default.css') }}">
+{% endblock %}
+
+
+{% block body %}
+<section class="container">
+    <section class="row">
+        <section class="col">
+            <h4 style="margin-top:5vh;">My Comments:</h4>
+            <hr style="height:1px;border:none;color:#333;background-color:#333;"/>
+
+            {% if replies != None %}
+            {% for reply in replies %}
+            <div id="{{ reply[0] }}">
+                <div class="card card-main-design" tabindex="-1">
+                    <div class="card-body">
+                        <h6>Reply to: <a href="{{ url_for('post_bp.post_data', postid=reply[2]) }}">{{ reply[4] }} - {{
+                            reply[5] }}</a></h6>
+                        <hr/>
+                        <p class="text-muted" style="font-size: 10px;">Replied on: {{ reply[3] }}</p>
+                        <p>{{ reply[1] }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-3" style="margin: 0;">
+                                {% if reply[7] == current_user.name %}
+                                <span class="badge badge-pill badge-secondary">Likes: {{ reply[6] }}</span>
+                                {% else %}
+                                {% if reply[0] in r_likes %}
+                                <span class="badge badge-pill badge-success card_body_interaction"
+                                      onclick="reply_like(this, '{{ reply[0] }}', '{{ csrf_token() }}');">Likes: {{ reply[6] }}</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary card_body_interaction"
+                                      onclick="reply_like(this, '{{ reply[0] }}', '{{ csrf_token() }}');">Likes: {{ reply[6] }}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-4 text-right">
+                                <span class="badge badge-pill badge-warning card_body_interaction"
+                                      onclick="edit_reply('{{ reply[0] }}')">Edit</span>
+                            </div>
+                            <div class="col-5 text-right">
+                                <form id="delete_form_reply_{{ reply[0] }}" method="POST" action="{{ url_for('post_bp.delete_reply', replyid=reply[0]) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <span class="badge badge-pill badge-danger card_body_interaction" onclick="delete_reply('{{ reply[0] }}')">Delete</span>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+            {% else %}
+
+            <div class="card card-main-design" tabindex="-1">
+                <div class="card-body">
+                    <h5>You have not commented any post yet</h5>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+    </section>
+</section>
+
+<button onclick="topFunction()" id="fabutton" title="Go to top">Top</button>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/fab_button.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_button_handler.js')}}"></script>
+{% endblock %}

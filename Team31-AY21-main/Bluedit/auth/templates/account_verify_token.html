@@ -1,0 +1,32 @@
+{% extends "_auth_layout.html" %}
+
+{% block title %}
+<title>Bluedit - Account Verification</title>
+{% endblock %}
+
+{% block head_script %}
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/auth_login.css') }}">-->
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-5">
+            <div class="form-container">
+                <a href="{{ url_for('auth_bp.login') }}">&#8592; Back to login</a>
+                <br>
+                <hr>
+                <p><b>Activation Status Log:</b></p>
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert"
+                     style="display: {{status[0]}}">
+                    {{status[1]}}
+                </div>
+                <br>
+            </div>
+        </section>
+    </section>
+</section>
+{% endblock %}
+
+{% block body_script %}
+{% endblock %}

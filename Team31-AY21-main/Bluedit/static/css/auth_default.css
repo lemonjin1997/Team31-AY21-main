@@ -1,0 +1,56 @@
+body {
+    /* Location of image */
+    background-image: url('../images/bg-3-Usman-Yousaf.jpg');
+
+    /* Image is centered vertically and horizontally at all time */
+    background-position: center center;
+
+    /* Image no repeat */
+    background-repeat: no-repeat;
+
+    /* Make the image fixed in the viewport so that it doesn't move when
+        the content height is greater than the image height */
+    background-attachment: fixed;
+
+    /* This is what makes the bg image rescale based on its container's size */
+    background-size: cover;
+
+    /* Color the bg will be when the image is still loading */
+    background-color: #659DBD;
+
+    /* the background-color is mixed with the background-image to reflect the lightness of the backdrop */
+    background-blend-mode: overlay;
+}
+
+.form-container {
+    /* Set the container to leave a gap away from the top */
+    position: relative;
+    margin-top: 10vh;
+
+    /* Container Designs */
+    background: #FFF;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 0px #000;
+}
+
+.form-container img {
+    max-width: 100%;
+    width: 100%;
+}
+
+.input-container {
+    margin-top: 5%;
+    margin-bottom: 7.5%;
+}
+
+.text-decoration {
+    position: relative;
+    margin-top: 1.5%;
+}
+
+.error-warning {
+    color: red;
+    font-weight: bold;
+    font-size: 12px;
+}

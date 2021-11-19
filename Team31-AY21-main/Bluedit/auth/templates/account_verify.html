@@ -1,0 +1,67 @@
+{% extends "_auth_layout.html" %}
+
+{% block title %}
+<title>Bluedit - Account Verification</title>
+{% endblock %}
+
+{% block head_script %}
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/auth_login.css') }}">-->
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-5">
+
+            <div class="form-container">
+
+                <a href="{{ url_for('auth_bp.login') }}">&#8592; Back to login</a>
+
+                <br>
+                <hr>
+
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert"
+                     style="display: {{status[0]}}">
+                    <b>{{status[1]}}</b>
+                </div>
+
+                <p>Hello there ! We, the <span style="color:#003f9a; font-weight:bold;">Bluedit</span> community,
+                    welcome you join us.</p>
+
+                <p>Unfortunately, we are still unable to verify that you are an actual user. Please follow the
+                    instructions below to verify yourself as the final step before joining us.</p>
+
+                <p>Click the button below to generate a unique verification url that will be sent to your email.</p>
+
+                <form id="verify_form" method="POST" action="{{ url_for('auth_bp.verify_account') }}">
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-group">
+                        {{ recaptcha }}
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" name="generateLink_btn" class="btn btn-primary"
+                                onclick="verify_handler()">Send email
+                            verification
+                            link
+                        </button>
+                    </div>
+
+                </form>
+
+                <br>
+                <hr>
+
+                <p><small>&#9755; Once you have verified, you can close this page and proceed to login</small></p>
+            </div>
+        </section>
+    </section>
+</section>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/validator.js')}}"></script>
+<script src="{{url_for('static', filename='js/auth_verify.js')}}"></script>
+{% endblock %}

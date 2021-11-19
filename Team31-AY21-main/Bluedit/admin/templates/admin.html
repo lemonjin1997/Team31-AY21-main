@@ -1,0 +1,84 @@
+{% extends "_home_layout.html" %}
+{% set active_page = "admin" %}
+
+{% block title %}
+<title>Bluedit - Admin Console</title>
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-10">
+            <div class="form-container">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_bp.admin') }}">Update Role</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_bp.admin_reported_post') }}">Reported Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_bp.admin_reported_reply') }}">Reported Replies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_bp.admin_account_ban') }}">Account Ban</a>
+                    </li>
+                </ul>
+
+                <br/>
+                <br/>
+
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert" style="display: {{ status[0] }}">
+                    <b>{{ status[1] }}</b>
+                </div>
+
+                {% if users != None %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">Date Joined</th>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Role</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user[0] }}</td>
+                            <td>{{ user[1] }}</td>
+                            <td>{{ user[2] }}</td>
+                            <td>{{ user[3] }}</td>
+                            <td>
+                                <form id="promote_form_{{ user[1] }}" method="POST" action="{{ url_for('admin_bp.admin') }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="id" value="{{ user[1] }}">
+                                    <button type="button" class="btn btn-primary" onclick="promote_handler('{{ user[1] }}')">Promote</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% else %}
+
+                <h6>No existing users in the application</h6>
+
+                {% endif %}
+
+            </div>
+        </section>
+    </section>
+</section>
+
+<button onclick="topFunction()" id="fabutton" title="Go to top">Top</button>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/fab_button.js')}}"></script>
+<script src="{{url_for('static', filename='js/admin_button_handler.js')}}"></script>
+{% endblock %}

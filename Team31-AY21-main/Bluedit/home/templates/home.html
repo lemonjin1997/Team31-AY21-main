@@ -1,0 +1,204 @@
+{% extends "_home_layout.html" %}
+{% set active_page = "home" %}
+
+{% block title %}
+<title>Bluedit - Home</title>
+{% endblock %}
+
+{% block body %}
+<section class="container">
+    <section class="row">
+        <section class="col">
+            <div class="mb-3">
+                <div class="card home-tool-bar">
+                    <div class="card-body">
+                        <h5 class="card-title">Post Search</h5>
+
+                        <form id="search_form" method="POST" action="{{ url_for('home_bp.home') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <input type="hidden" name="category" id="category" value="postTitle">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" id="drop_down_btn"
+                                            name="drop_down_btn" value="postTitle" type="button" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">Title
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-item" onclick="target_handler('postTitle', 'Title');">
+                                            Title
+                                        </li>
+                                        <li class="dropdown-item" onclick="target_handler('postContent', 'Content');">
+                                            Content
+                                        </li>
+                                        <li class="dropdown-item" onclick="target_handler('UUID', 'User');">User</li>
+                                        <li class="dropdown-item" onclick="target_handler('postCat', 'Categories');">
+                                            Categories
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <input type="text" class="form-control" id="search_target" name="search_target">
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+
+                        <form id="sort_form" method="GET" action="{{ url_for('home_bp.home') }}">
+                            <div class="form-group">
+                                <label for="sort"><b>Sort By:</b></label>
+                                <select class="form-control" id="sort" name="sort" onchange="sort_handler();">
+                                    {% if id == '1' %}
+                                    <option value="1" selected>Latest Post</option>
+                                    {% else %}
+                                    <option value="1">Latest Post</option>
+                                    {% endif %}
+                                    {% if id == '2' %}
+                                    <option value="2" selected>Oldest Post</option>
+                                    {% else %}
+                                    <option value="2">Oldest Post</option>
+                                    {% endif %}
+                                    {% if id == '3' %}
+                                    <option value="3" selected>Most Favourites</option>
+                                    {% else %}
+                                    <option value="3">Most Favourites</option>
+                                    {% endif %}
+                                    {% if id == '4' %}
+                                    <option value="4" selected>Least Favourites</option>
+                                    {% else %}
+                                    <option value="4">Least Favourites</option>
+                                    {% endif %}
+                                    {% if id == '5' %}
+                                    <option value="5" selected>Most Comments</option>
+                                    {% else %}
+                                    <option value="5">Most Comments</option>
+                                    {% endif %}
+                                    {% if id == '6' %}
+                                    <option value="6" selected>Least Comments</option>
+                                    {% else %}
+                                    <option value="6">Least Comments</option>
+                                    {% endif %}
+                                    {% if id == '7' %}
+                                    <option value="7" selected>Most Saves</option>
+                                    {% else %}
+                                    <option value="7">Most Saves</option>
+                                    {% endif %}
+                                    {% if id == '8' %}
+                                    <option value="8" selected>Least Saves</option>
+                                    {% else %}
+                                    <option value="8">Least Saves</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                        </form>
+
+                        <hr>
+
+                        <form>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <a type="button" href="{{ url_for('post_bp.post_form') }}"
+                                       class="btn btn-secondary float-right">Create New Post</a>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</section>
+<br>
+<hr style="height:1px;border:none;color:#333;background-color:#333; margin-left: 2%; margin-right:2%;"/>
+<br>
+<section class="container">
+    <section class="row">
+        <section class="col" id="post_col">
+            {% for post in posts %}
+            <div id="{{ post.postID }}">
+                <div class="card card-main-design" tabindex="-1">
+                    <div class="card-header">
+                        <p class="text-muted" style="font-size: 12px;">
+                            Posted by <a href="{{ url_for('profile_bp.profile', name=post.UUID) }}">{{ post.UUID }}</a>
+                            on {{ post.postTime }}
+                        </p>
+                    </div>
+                    <div class="card-body card_body_interaction" onclick="post_view('{{ post.postID }}');">
+
+                        <h4 class="card-title">{{ post.postTitle }}</h4>
+
+                        <p class="card-text">{{ post.postContent }}</p>
+
+                        {% if post.postImage != "No Image" %}
+                        <img src="{{ post.postImage }}" class="img-fluid" alt="Responsive image"
+                             style="max-width:200px; max-height:200px;">
+                        <br/>
+                        <br/>
+                        {% endif %}
+
+                        <hr/>
+
+                        <p class="text-muted" style="font-size: 12px;">
+                            Categories: {{ post.postCat }}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-3" style="margin: 0;">
+                                {% if post.UUID == current_user.name %}
+                                <span class="badge badge-pill badge-secondary">Likes: {{ post.postLikes }}</span>
+                                {% else %}
+                                {% if post.postID in likes %}
+                                <span class="badge badge-pill badge-success card_body_interaction"
+                                      onclick="like(this, '{{ post.postID }}', '{{ csrf_token() }}');">Likes: {{ post.postLikes }}</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary card_body_interaction"
+                                      onclick="like(this, '{{ post.postID }}', '{{ csrf_token() }}');">Likes: {{ post.postLikes }}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-3" style="margin: 0;">
+                                <span class="badge badge-pill badge-secondary card_body_interaction"
+                                      onclick="post_view('{{ post.postID }}');">Replies: {{ post.postReplies }}</span>
+                            </div>
+                            <div class="col-3" style="margin: 0;">
+                                {% if post.UUID == current_user.name %}
+                                <span class="badge badge-pill badge-secondary">Saves: {{ post.postSaves }}</span>
+                                {% else %}
+                                {% if post.postID in saves %}
+                                <span class="badge badge-pill badge-success card_body_interaction" onclick="save(this, '{{ post.postID }}', '{{ csrf_token() }}');">Saves: {{ post.postSaves }}</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary card_body_interaction" onclick="save(this, '{{ post.postID }}', '{{ csrf_token() }}');">Saves: {{ post.postSaves }}</span>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            {% if post.UUID != current_user.name %}
+                            <div class="col-3 text-right">
+                                <form id="report_post_{{ post.postID }}" method="POST" action="{{ url_for('post_bp.post_report', postid=post.postID) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <span class="badge badge-pill badge-danger card_body_interaction" onclick="report_post_handler('{{ post.postID }}');">Report</span>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+    </section>
+</section>
+
+<button onclick="topFunction()" id="fabutton" title="Go to top">Top</button>
+
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/fab_button.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_content.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_button_handler.js')}}"></script>
+{% endblock %}

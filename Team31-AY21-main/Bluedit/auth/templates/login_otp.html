@@ -1,0 +1,96 @@
+{% extends "_auth_layout.html" %}
+
+{% block title %}
+<title>Bluedit - Login</title>
+{% endblock %}
+
+{% block head_script %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth_otp.css') }}">
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-5">
+
+            <div class="form-container">
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert"
+                     style="display: {{ status[0] }}">
+                    <b>{{ status[1] }}</b>
+                </div>
+
+                <p><b>An otp token have been sent to your email address</b></p>
+                <p>Please enter the otp token stated in your email below: </p>
+
+                <form method="POST" id="otp_form" action="{{ url_for('auth_bp.login_otp_verification') }}"
+                      class="digit-group"
+                      data-group-name="digits" data-autosubmit="false" autocomplete="off">
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-group" style="margin-left: 1.3%;">
+
+                        <input type="number" id="digit-1" form-control name="digit-1" data-next="digit-2" min="0"
+                               max="9"
+                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                               maxlength="1"/>
+
+                        <input type="number" id="digit-2" form-control name="digit-2" data-next="digit-3"
+                               data-previous="digit-1" min="0" max="9"
+                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                               maxlength="1"/>
+
+                        <input type="number" id="digit-3" form-control name="digit-3" data-next="digit-4"
+                               data-previous="digit-2" min="0" max="9"
+                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                               maxlength="1"/>
+
+                        <span class="splitter">&ndash;</span>
+
+                        <input type="number" id="digit-4" form-control name="digit-4" data-next="digit-5"
+                               data-previous="digit-3" min="0" max="9"
+                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                               maxlength="1"/>
+
+                        <input type="number" id="digit-5" form-control name="digit-5" data-next="digit-6"
+                               data-previous="digit-4" min="0" max="9"
+                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                               maxlength="1"/>
+
+                        <input type="number" id="digit-6" form-control name="digit-6" data-previous="digit-5" min="0"
+                               max="9"
+                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                               maxlength="1"/>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div style="margin-left: 1.3%;">
+                            <button type="submit" name="submit_otp" class="btn btn-primary" value="submit_otp">Submit
+                                OTP
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <button type="submit" name="resend_otp" class="btn btn-link" value="resend_otp">Resend
+                                one-time password
+                            </button>
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+        </section>
+    </section>
+</section>
+{% endblock %}
+
+{% block body_script %}
+<
+<script src="{{url_for('static', filename='js/auth_otp.js')}}"></script>
+{% endblock %}

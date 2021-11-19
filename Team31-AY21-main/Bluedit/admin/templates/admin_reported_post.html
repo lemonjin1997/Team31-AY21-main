@@ -1,0 +1,102 @@
+{% extends "_home_layout.html" %}
+{% set active_page = "admin" %}
+
+{% block title %}
+<title>Bluedit - Admin Console</title>
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-10">
+            <div class="form-container">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_bp.admin') }}">Update Role</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_bp.admin_reported_post') }}">Reported Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_bp.admin_reported_reply') }}">Reported Replies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_bp.admin_account_ban') }}">Account Ban</a>
+                    </li>
+                </ul>
+
+                <br/>
+                <br/>
+
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert" style="display: {{ status[0] }}">
+                    <b>{{ status[1] }}</b>
+                </div>
+
+                {% if posts != None %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">Post ID</th>
+                            <th scope="col">Post Title</th>
+                            <th scope="col">Post Content</th>
+                            <th scope="col">No. Of Reports</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for post in posts %}
+                        <tr>
+                            <td>{{ post[0] }}</td>
+                            <td>{{ post[1] }}</td>
+                            <td>{{ post[2] }}</td>
+                            <td>{{ post[3] }}</td>
+
+                            <td>
+                                <form id="lock_form_{{ post[0] }}" method="POST" action="{{ url_for('admin_bp.admin_reported_post') }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="id" value="{{ post[0] }}">
+                                    {% if locks != None %}
+                                    {% for lock in locks %}
+                                    {% if post[0] in lock %}
+                                    <button type="button" class="btn btn-primary" onclick="lock_handler('{{ post[0] }}')">Unlock</button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-primary" onclick="lock_handler('{{ post[0] }}')">Lock</button>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% else %}
+                                    <button type="button" class="btn btn-primary" onclick="lock_handler('{{ post[0] }}')">Lock</button>
+                                    {% endif %}
+                                </form>
+                            </td>
+
+                            <td>
+                                <form id="delete_form_{{ post[0] }}" method="POST" action="{{ url_for('post_bp.delete_post_admin', postid=post[0]) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="button" class="btn btn-danger" onclick="delete_handler('{{ post[0] }}')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% else %}
+
+                <h6>No existing reported post in the application</h6>
+
+                {% endif %}
+            </div>
+        </section>
+    </section>
+</section>
+
+<button onclick="topFunction()" id="fabutton" title="Go to top">Top</button>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/fab_button.js')}}"></script>
+<script src="{{url_for('static', filename='js/admin_button_handler.js')}}"></script>
+{% endblock %}

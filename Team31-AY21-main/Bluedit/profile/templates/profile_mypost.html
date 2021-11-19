@@ -1,0 +1,90 @@
+{% extends "_profile_layout.html" %}
+{% set active_page = "profile" %}
+
+{% block title %}
+<title>Bluedit - Profile</title>
+{% endblock %}
+
+
+{% block head_script %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_default.css') }}">
+{% endblock %}
+
+
+{% block body %}
+<section class="container">
+    <section class="row">
+        <section class="col">
+            <h4 style="margin-top:5vh;">My Post:</h4>
+            <hr style="height:1px;border:none;color:#333;background-color:#333;"/>
+
+            {% if posts != None %}
+            {% for post in posts %}
+            <div id="{{ post.postID }}">
+                <div class="card card-main-design" tabindex="-1">
+                    <div class="card-header">
+                        <p class="text-muted" style="font-size: 12px;">
+                            Posted on {{ post.postTime }}
+                        </p>
+                    </div>
+                    <div class="card-body card_body_interaction" onclick="post_view('{{ post.postID }}');">
+
+                        <h4 class="card-title">{{ post.postTitle }}</h4>
+
+                        <p class="card-text">{{ post.postContent }}</p>
+
+                        {% if post.postImage != "No Image" %}
+                        <img src="{{ post.postImage }}" class="img-fluid" alt="Responsive image"
+                             style="max-width:200px; max-height:200px;">
+                        <br/>
+                        <br/>
+                        {% endif %}
+
+                        <hr/>
+
+                        <p class="text-muted" style="font-size: 12px;">
+                            Categories: {{ post.postCat }}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-7" style="margin: 0;">
+                                <span class="badge badge-pill badge-info">Likes: {{ post.postLikes }}</span>
+                                <span class="badge badge-pill badge-info">Replies: {{ post.postReplies }}</span>
+                                <span class="badge badge-pill badge-info">Saves: {{ post.postSaves }}</span>
+                            </div>
+                            <div class="col-2 text-right">
+                                <span class="badge badge-pill badge-warning card_body_interaction"
+                                      onclick="edit_post('{{ post.postID }}')">Edit</span>
+                            </div>
+                            <div class="col-3 text-right">
+                                <form id="delete_form_{{ post.postID }}" method="POST" action="{{ url_for('post_bp.delete_post', postid=post.postID) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <span class="badge badge-pill badge-danger card_body_interaction" onclick="delete_post('{{ post.postID }}')">Delete</span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+            {% else %}
+
+            <div class="card card-main-design" tabindex="-1">
+                <div class="card-body">
+                    <h5>You have not posted any post yet</h5>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+    </section>
+</section>
+
+<button onclick="topFunction()" id="fabutton" title="Go to top">Top</button>
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/fab_button.js')}}"></script>
+<script src="{{url_for('static', filename='js/post_button_handler.js')}}"></script>
+{% endblock %}

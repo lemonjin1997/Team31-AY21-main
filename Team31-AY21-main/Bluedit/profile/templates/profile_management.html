@@ -1,0 +1,343 @@
+{% extends "_profile_layout.html" %}
+{% set active_page = "profile" %}
+
+{% block title %}
+<title>Bluedit - Profile</title>
+{% endblock %}
+
+
+{% block head_script %}
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"
+      rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_default.css') }}">
+{% endblock %}
+
+
+{% block body %}
+
+
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-6">
+
+            <div class="form-container">
+                <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert"
+                     style="display: {{status[0]}}">
+                    <b>{{status[1]}}</b>
+                </div>
+
+                <h3>Username:</h3>
+                <div class="form-row">
+                    <div class="col-10">
+                        <input class="form-control" type="text" value="{{ profile.username }}" readonly>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#username_modal">
+                            <i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <br>
+                <br>
+
+                <h3>About:</h3>
+                <div class="form-row">
+                    <div class="col-10">
+                        <textarea class="form-control" rows="3" style="resize: none"
+                                  readonly>{{ profile.about }}</textarea>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#about_modal">
+                            <i class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+
+                <br>
+                <br>
+
+                <h3>Email:</h3>
+                <p>Current email won't be displayed for security purposes, however you can still update it by clicking
+                    the button below.</p>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#email_modal"><i
+                        class="fas fa-pen"></i></button>
+                <small class="form-text text-muted">Note that you be logged out to re-verify your new email on
+                    successful change</small>
+
+                <br>
+                <br>
+
+                <h3>Password:</h3>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#password_modal"
+                        data-backdrop="static" data-keyboard="false"><i class="fas fa-pen"></i></button>
+                <small class="form-text text-muted">Note that you be logged out to after successfully changing your
+                    password</small>
+
+                <br>
+                <br>
+
+                <h3>Email 2FA:</h3>
+                <p>Default, the email 2fa is enabled. You may disable it if you so wish to.</p>
+                {% if email_auth == 0 %}
+                <input type="checkbox" data-toggle="toggle" onchange="toggle_handler();">
+                {% else %}
+                <input type="checkbox" checked data-toggle="toggle" onchange="toggle_handler();">
+                {% endif %}
+
+                <br>
+                <br>
+
+            </div>
+
+
+        </section>
+    </section>
+</section>
+
+
+<!-- Modal for username change -->
+<div class="modal fade" id="username_modal" tabindex="-1" role="dialog" aria-labelledby="username_modal"
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="username_modal_label">Update username</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col">
+                        <form id="username_change_form" action="{{ url_for('profile_bp.manage_profile_update_name') }}"
+                              method="POST">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="form-group">
+                                <input class="form-control" type="text" value="{{ profile.username }}"
+                                       placeholder="Update Username" id="username" name="username">
+                            </div>
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="username-change" name="username-change"
+                                    onclick="change_username_handler()">Update Username
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for about change -->
+<div class="modal fade" id="about_modal" tabindex="-1" role="dialog" aria-labelledby="about_modal"
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="about_modal_label">Update about</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col">
+                        <form id="about_change_form" action="{{ url_for('profile_bp.manage_profile_update_about') }}"
+                              method="POST">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="form-group">
+                                <textarea class="form-control" id="about" name="about" rows="3" style="resize: none">{{ profile.about }}</textarea>
+                            </div>
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="about-change" name="about-change">Update
+                                About
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for email change -->
+<div class="modal fade" id="email_modal" tabindex="-1" role="dialog" aria-labelledby="email_modal"
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="email_modal_label">Update email</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col">
+                        <form id="email_change_form" action="{{ url_for('auth_bp.manage_profile_update_email') }}"
+                              method="POST">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="form-group">
+                                <label for="current-email">Current Email address</label>
+                                <input class="form-control" type="text" placeholder="Update your current email"
+                                       id="current-email" name="current-email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new-email">New Email address</label>
+                                <input class="form-control" type="text" placeholder="Update your new email"
+                                       id="new-email" name="new-email">
+                            </div>
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="email-change" name="email-change"
+                                    onclick="change_email_handler()">Update Email
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for password change -->
+<div class="modal fade" id="password_modal" tabindex="-1" role="dialog" aria-labelledby="email_modal"
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="password_modal_label">Update password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col">
+
+                        <form id="password_change_form"
+                              action="{{ url_for('auth_bp.manage_profile_update_password') }}"
+                              method="POST">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="form-group">
+                                <label for="current-pw">Current Password</label>
+                                <input class="form-control" type="password" placeholder="Enter your current password"
+                                       id="current-pw" name="current-pw">
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group">
+                                <label for="new-password">New Password</label>
+                                <input class="form-control" type="password" placeholder="Enter your new password"
+                                       id="new-password" name="new-password">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cfm-password">Confirm Password</label>
+                                <input class="form-control" type="password" placeholder="Enter your new password again"
+                                       id="cfm-password" name="cfm-password">
+                            </div>
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="password-change" name="password-change"
+                                    onclick="change_password_handler()">Update Password
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal for 2fa change -->
+<div class="modal fade" id="tfa_modal" tabindex="-1" role="dialog" aria-labelledby="tfa_modal"
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="tfa_modal_label">Update email 2fa</h5>
+                <button type="button" class="close" onclick="refresh_page();" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col">
+                        <form id="tfa_change_form" action="{{ url_for('auth_bp.manage_profile_update_tfa') }}"
+                              method="POST">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <input type="text" value="" id="tfa" name="tfa" hidden readonly>
+
+                            <h4>Are you sure?</h4>
+                            <p>Are you sure you want to update your email 2fa status. (By default is on)</p>
+
+                            <button type="button" class="btn btn-secondary" onclick="refresh_page();">Close</button>
+                            <button type="submit" class="btn btn-primary" id="tfa-change" name="tfa-change">Update 2FA
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block body_script %}
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<script type=text/javascript>var tfa = {{ email_auth }}</script>
+<script src="{{url_for('static', filename='js/validator.js')}}"></script>
+<script src="{{url_for('static', filename='js/profile_management.js')}}"></script>
+{% endblock %}

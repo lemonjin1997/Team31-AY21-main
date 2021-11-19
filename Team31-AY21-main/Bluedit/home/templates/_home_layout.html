@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}{% endblock %}
+
+    <!-- To add in a logo beside the tab -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/Bluedit.ico') }}">
+
+    <!-- Bootstrap 4 cdn -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Font awesome cdn -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+          integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home_default.css') }}">
+
+    {% block head_script %}{% endblock %}
+</head>
+
+<body>
+
+{% if current_user.role == 'admin' %}
+{% set nav_bar = [('/', 'home', 'Home'), ('/admin', 'admin', 'Admin')]-%}
+{% else %}
+{% set nav_bar = [('/', 'home', 'Home')]-%}
+{% endif %}
+{% set active_page = active_page|default('home') -%}
+
+<nav class="navbar navbar-expand-lg navbar-light sticky-top"
+     style="background-image: linear-gradient(to right, #BFCADC, #C3CADD, #BDC8DA, #B9C6D9, #93ACCA, #7495B8); box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);">
+    <a class="navbar-brand" href="/" id="nav_title_design">Bluedit</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+
+            {% for href, id, caption in nav_bar %}
+            {% if id == active_page %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ href|e }}">{{ caption|e }}<span class="sr-only">(current)</span></a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ href|e }}">{{ caption|e }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            <li class="nav-item">
+                <p class="nav-link"></p>
+            </li>
+
+            <form class="form-inline" method="POST" action="{{ url_for('profile_bp.search_profile') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search Profile" name="username" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav mr-auto">
+                {% if current_user.is_authenticated %}
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        Profile
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{{ url_for('profile_bp.profile', name=current_user.name) }}">My Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('auth_bp.logout') }}">Sign Out</a>
+                    </div>
+                </li>
+
+                {% else %}
+                <li>
+                    <a class="nav-link" href="{{ url_for('auth_bp.login') }}">Sign In</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{{ url_for('auth_bp.register') }}">Sign Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </form>
+    </div>
+</nav>
+
+{% block body %}{% endblock %}
+
+<!-- Bootstrap 4 cdn scripts -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+{% block body_script %}{% endblock %}
+
+</body>
+</html>

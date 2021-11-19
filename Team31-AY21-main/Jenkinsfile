@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    stages {
+        stage('build') {
+            steps {
+                sh 'pip install -U pip'
+                sh 'pip install -U Werkzeug'
+				sh 'pip install bandit'
+				sh 'pip install safety'
+				sh 'pip install Flask-Testing'
+            }
+        }
+		stage('test') {
+		    agent {
+		        docker {
+		            image 'python:3.9.7-alpine3.13'
+		        }
+		    }
+            steps {
+                sh 'pip install Flask-Testing'
+                sh 'pip install -r requirements.txt --ignore-installed'
+				sh 'python functionaltest.py'
+				sh 'pytest unit_test.py'
+				sh 'pytest security_req_unit_test.py'
+            }
+        }
+        stage ("Python Bandit Security Scan"){
+			steps{
+				sh "bandit -r Bluedit"
+			}
+		}
+		stage ("Dependency Check with Python Safety"){
+			steps{
+				sh "safety check --ignore=40291"
+			}
+		}
+
+    stage ("OWASP Dependency Check"){
+		steps{
+			dependencyCheck additionalArguments: '--format HTML --format XML --scan Bluedit', odcInstallation: 'Default'
+		}
+
+	}
+    }
+	post{
+		success{
+			dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+		}
+	}
+}

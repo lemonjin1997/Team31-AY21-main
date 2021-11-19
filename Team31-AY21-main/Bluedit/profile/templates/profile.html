@@ -1,0 +1,260 @@
+{% extends "_profile_layout.html" %}
+{% set active_page = "profile" %}
+
+{% block title %}
+<title>Bluedit - Profile</title>
+{% endblock %}
+
+
+{% block head_script %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_default.css') }}">
+{% endblock %}
+
+
+{% block body %}
+
+{% if name_valid %}
+
+<div class="row py-5 px-4">
+    <div class="col-md-5 mx-auto">
+        <div class="alert {{ status[2] }} alert-dismissible fade show" id="error-alert" role="alert"
+             style="display: {{ status[0] }}">
+            <b>{{status[1]}}</b>
+        </div>
+
+        <!-- Profile widget -->
+        <div class="bg-white shadow rounded overflow-hidden">
+            <div class="px-4 pt-0 pb-4 cover">
+                {% if current_user.is_authenticated and my_profile %}
+                <div class="media align-items-end profile-head">
+                    <div class="profile mr-3">
+
+                        <img src="{{ profile.profileImg }}" alt="profile image" width="130"
+                             class="rounded mb-2 img-thumbnail profile-image" data-toggle="modal"
+                             data-target="#upload_image_modal">
+
+                        <a href="{{ url_for('profile_bp.manage_profile') }}"
+                           class="btn btn-outline-dark btn-sm btn-block">Edit profile</a>
+
+                    </div>
+
+                    <div class="media-body mb-5 text-white">
+                        <h4 class="mt-0 mb-0">{{ profile.username }}</h4>
+                        <p class="small mb-4"></p>
+                        <!-- as an empty <p> for design -->
+                    </div>
+                </div>
+                {% else %}
+
+                <div class="media align-items-end profile-head">
+                    <div class="profile mr-3"><img
+                            src="{{ profile.profileImg }}"
+                            alt="..." width="130" class="rounded mb-2 img-thumbnail">
+                    </div>
+
+                    <div class="media-body mb-5 text-white">
+                        <h4 class="mt-0 mb-0">{{ profile.username }}</h4>
+                        <p class="small mb-4"></p>
+                        <!-- as an empty <p> for design -->
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if current_user.is_authenticated and my_profile %}
+            <div class="bg-light p-4 d-flex justify-content-end text-center profile-counter">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <a href="{{ url_for('profile_bp.profile_mypost') }}"><h5 class="font-weight-bold mb-0 d-block">{{ profile.posted }}</h5>
+                            <small class="text-muted">Posted</small></a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="{{ url_for('profile_bp.profile_mycomment') }}"><h5 class="font-weight-bold mb-0 d-block">{{ profile.commented }}</h5><small
+                                class="text-muted">Commented</small></a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="{{ url_for('profile_bp.profile_myupvote') }}"><h5 class="font-weight-bold mb-0 d-block">{{ profile.upvoted }}</h5><small
+                                class="text-muted">Upvoted</small></a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-light p-4 d-flex justify-content-end text-center profile-counter">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{ profile.reported }}</h5><small class="text-muted">Reported</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="{{ url_for('profile_bp.profile_mystash') }}"><h5 class="font-weight-bold mb-0 d-block">{{ profile.saved }}</h5>
+                            <small class="text-muted">Saved</small></a>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+
+            <div class="bg-light p-4 d-flex justify-content-end text-center profile-counter">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{ profile.posted }}</h5><small
+                            class="text-muted">Posted</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{ profile.commented }}</h5><small
+                            class="text-muted">Commented</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{ profile.upvoted }}</h5><small
+                            class="text-muted">Upvoted</small>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="px-4 py-3">
+                <h5 class="mb-0">About</h5>
+                <div class="p-4 rounded shadow-sm bg-light">
+                    <p class="font-italic mb-0">{{ profile.about }}</p>
+                </div>
+            </div>
+
+            <div class="py-4 px-4">
+                <h5 class="mb-0">Latest Post:</h5>
+
+                <div class="row">
+                    {% if posts != None %}
+                    {% for post in posts %}
+                    <div class="container" id="{{ post.postID }}">
+                        <div class="card card-main-design" tabindex="-1">
+                            <div class="card-header">
+                                <p class="text-muted" style="font-size: 12px;">
+                                    Posted on {{ post.postTime }}
+                                </p>
+                            </div>
+                            <div class="card-body card_body_interaction" onclick="post_view('{{ post.postID }}');">
+
+                                <h4 class="card-title">{{ post.postTitle }}</h4>
+
+                                <p class="card-text">{{ post.postContent }}</p>
+
+                                {% if post.postImage != "No Image" %}
+                                <img src="{{ post.postImage }}" class="img-fluid" alt="Responsive image"
+                                     style="max-width:200px; max-height:200px;">
+                                <br/>
+                                <br/>
+                                {% endif %}
+
+                                <hr/>
+
+                                <p class="text-muted" style="font-size: 12px;">
+                                    Categories: {{ post.postCat }}
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <span class="badge badge-pill badge-info">Likes: {{ post.postLikes }}</span>
+                                        <span class="badge badge-pill badge-info">Replies: {{ post.postReplies }}</span>
+                                        <span class="badge badge-pill badge-info">Saves: {{ post.postSaves }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="container">
+                        <div class="card card-main-design" tabindex="-1">
+                            <div class="card-body text-center">
+                                {% if my_profile %}
+                                <p class="card-text"><b><u>You have yet to post anything</u></b></p>
+                                {% else %}
+                                <p class="card-text"><b><u>This user have yet to post anything</u></b></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<section class="container-fluid">
+    <section class="row justify-content-center">
+        <section class="col-12 col-sm-6 col-md-6">
+
+            <div class="form-container">
+                <a href="{{ url_for('home_bp.home') }}">&#8592; Back to home</a>
+
+                <br>
+                <hr>
+
+                <div class="alert alert-danger alert-dismissible fade show" id="no_user_alert" role="alert">
+                    <b style="font-size: 22px;">"{{ user }}" does not exist</b>
+                    <br/>
+                    <p> - "{{ user }}" does not exist, are you sure you have searched for the correct person ?</p>
+                </div>
+            </div>
+
+        </section>
+    </section>
+</section>
+
+{% endif %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="upload_image_modal" tabindex="-1" role="dialog" aria-labelledby="upload_image_modal"
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="upload_image_modal_label">Change Profile Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col">
+                        <form action="{{ url_for('profile_bp.image_change') }}" method="POST"
+                              enctype="multipart/form-data">
+
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="form-group">
+                                <label>Select Image for Profile Picture</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="image" id="image">
+                                    <label class="custom-file-label" id="image_label" for="image">Browse for
+                                        file...</label>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Upload Image</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block body_script %}
+<script src="{{url_for('static', filename='js/profile_image.js')}}"></script>
+<script src="{{url_for('static', filename='js/profile_post.js')}}"></script>
+{% endblock %}

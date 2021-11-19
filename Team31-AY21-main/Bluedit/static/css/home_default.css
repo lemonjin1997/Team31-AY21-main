@@ -1,0 +1,82 @@
+body {
+    /* Location of image */
+    background-image: url('../images/bg-1-Charles-Postiaux.jpg');
+
+    /* Image is centered vertically and horizontally at all time */
+    background-position: center center;
+
+    /* Image no repeat */
+    background-repeat: no-repeat;
+
+    /* Make the image fixed in the viewport so that it doesn't move when
+        the content height is greater than the image height */
+    background-attachment: fixed;
+
+    /* This is what makes the bg image rescale based on its container's size */
+    background-size: cover;
+
+    /* Color the bg will be when the image is still loading */
+    background-color: #f5fcff;
+
+}
+
+#nav_title_design {
+    font-family: Brush Script MT, Brush Script Std, cursive;
+    color: #003f9a;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#fabutton {
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed/sticky position */
+  bottom: 20px; /* Place the button at the bottom of the page */
+  right: 30px; /* Place the button 30px from the right */
+  z-index: 99; /* Make sure it does not overlap */
+  border: none; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: red; /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 15px; /* Some padding */
+  border-radius: 15px; /* Rounded corners */
+  font-size: 16px; /* Increase font size */
+}
+
+#fabutton:hover {
+    background-color: #555; /* Add a dark-grey background on hover */
+}
+
+.card-main-design {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    border: 1px solid black;
+}
+
+.card_body_interaction {
+    cursor: pointer;
+}
+
+.card_body_interaction:hover {
+    box-shadow: 0px 0px 10px 0px #000;
+}
+
+.home-tool-bar {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    border: 1px solid black;
+    box-shadow: 0px 10px 8px 3px #888888;
+}
+
+.form-container {
+    /* Set the container to leave a gap away from the top */
+    position: relative;
+    margin-top: 10vh;
+
+    /* Container Designs */
+    background: #FFF;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 0px #000;
+}
+

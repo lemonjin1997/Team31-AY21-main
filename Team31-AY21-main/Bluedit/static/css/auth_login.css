@@ -1,0 +1,9 @@
+.text-decoration p {
+    text-align: center;
+    font-family: "Lucida Bright", monospace;
+    font-size: 12px;
+}
+
+.text-decoration a {
+    text-decoration: underline;
+}
