@@ -3,7 +3,7 @@ pipeline {
 	stages {
 		stage('Checkout SCM') {
 			steps {
-				git '/home/Teammain'
+				git 'https://github.com/lemonjin1997/Teammain'
 			}
 		}
 
