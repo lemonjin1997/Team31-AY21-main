@@ -1,11 +1,11 @@
 pipeline {
 	agent any
 	stages {
-		stage('Checkout SCM') {
-			steps {
-				git 'https://github.com/lemonjin1997/Teammain'
-			}
-		}
+// 		stage('Checkout SCM') {
+// 			steps {
+// 				git 'https://github.com/lemonjin1997/Teammain'
+// 			}
+// 		}
 
 		stage('OWASP DependencyCheck') {
 			steps {
